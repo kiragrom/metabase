@@ -8,6 +8,7 @@
              [interface :as i]
              [util :as sync-util]]
             [metabase.util :as u]
+            [metabase.util.metrics :as um]
             [schema.core :as s]
             [toucan.db :as db]))
 
@@ -39,5 +40,6 @@
   [database :- i/DatabaseInstance]
   (sync-util/sync-operation :cache-field-values database (format "Cache field values in %s"
                                                                  (sync-util/name-for-logging database))
-    (doseq [table (sync-util/db->sync-tables database)]
-      (update-field-values-for-table! table))))
+    (um/with-time-db! database ["sync" "field-values"]
+      (doseq [table (sync-util/db->sync-tables database)]
+        (update-field-values-for-table! table)))))

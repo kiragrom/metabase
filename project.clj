@@ -104,7 +104,9 @@
                  [ring/ring-json "0.4.0"]                             ; Ring middleware for reading/writing JSON automatically
                  [stencil "0.5.0"]                                    ; Mustache templates for Clojure
                  [toucan "1.1.4"                                      ; Model layer, hydration, and DB utilities
-                  :exclusions [honeysql]]]
+                  :exclusions [honeysql]]
+                 [metrics-clojure "2.10.0"]                           ; Metrics library that wraps Code Hale's metrics library
+                 [metrics-clojure-ring "2.10.0"]]                     ; Metrics library extras for ring apps
   :repositories [["bintray" "https://dl.bintray.com/crate/crate"]     ; Repo for Crate JDBC driver
                  ["redshift" "https://s3.amazonaws.com/redshift-driver-downloads"]]
   :plugins [[lein-environ "1.1.0"]                                    ; easy access to environment variables

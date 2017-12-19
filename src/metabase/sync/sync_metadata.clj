@@ -15,21 +15,27 @@
              [metabase-metadata :as metabase-metadata]
              [sync-timezone :as sync-tz]
              [tables :as sync-tables]]
+            [metabase.util.metrics :as um]
             [schema.core :as s]))
 
 (s/defn sync-db-metadata!
   "Sync the metadata for a Metabase DATABASE. This makes sure child Table & Field objects are synchronized."
   [database :- i/DatabaseInstance]
   (sync-util/sync-operation :sync-metadata database (format "Sync metadata for %s" (sync-util/name-for-logging database))
-    (sync-tz/sync-timezone! database)
+    (um/with-time-db! database ["sync" "metadata" "timezone"]
+      (sync-tz/sync-timezone! database))
     ;; Make sure the relevant table models are up-to-date
-    (sync-tables/sync-tables! database)
+    (um/with-time-db! database ["sync" "metadata" "tables"]
+      (sync-tables/sync-tables! database))
     ;; Now for each table, sync the fields
-    (sync-fields/sync-fields! database)
+    (um/with-time-db! database ["sync" "metadata" "fields"]
+      (sync-fields/sync-fields! database))
     ;; Now for each table, sync the FKS. This has to be done after syncing all the fields to make sure target fields exist
-    (sync-fks/sync-fks! database)
+    (um/with-time-db! database ["sync" "metadata" "fks"]
+      (sync-fks/sync-fks! database))
     ;; finally, sync the metadata metadata table if it exists.
-    (metabase-metadata/sync-metabase-metadata! database)))
+    (um/with-time-db! database ["sync" "metadata" "metabase-metadata"]
+      (metabase-metadata/sync-metabase-metadata! database))))
 
 (s/defn ^:always-validatge sync-table-metadata!
   "Sync the metadata for an individual TABLE -- make sure Fields and FKs are up-to-date."

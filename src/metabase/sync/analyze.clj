@@ -4,7 +4,9 @@
    like running MBQL queries and fetching values to do things like determine Table row counts
    and infer field special types."
   (:require [clojure.tools.logging :as log]
-            [metabase.models.field :refer [Field]]
+            [metabase.models
+             [field :refer [Field]]
+             [table :as table :refer [Table]]]
             [metabase.sync
              [interface :as i]
              [util :as sync-util]]
@@ -13,6 +15,7 @@
              [fingerprint :as fingerprint]
              #_[table-row-count :as table-row-count]]
             [metabase.util :as u]
+            [metabase.util.metrics :as um]
             [schema.core :as s]
             [toucan.db :as db]))
 
@@ -67,14 +70,21 @@
 
 (s/defn analyze-table!
   "Perform in-depth analysis for a TABLE."
-  [table :- i/TableInstance]
-  ;; Table row count disabled for now because of performance issues
-  #_(table-row-count/update-row-count! table)
-  (fingerprint/fingerprint-fields! table)
-  (classify/classify-fields! table)
-  (classify/classify-table! table)
-  (update-fields-last-analyzed! table))
+  ([table :- i/TableInstance]
+   (analyze-table! (table/database table) table))
+  ([database :- i/DatabaseInstance
+    table :- i/TableInstance]
+   ;; Table row count disabled for now because of performance issues
+   #_(table-row-count/update-row-count! table)
 
+   (um/with-time-db! database ["sync" "analyze" "fingerprint"]
+     (fingerprint/fingerprint-fields! table))
+   (um/with-time-db! database ["sync" "analyze" "classify-fields"]
+     (classify/classify-fields! table))
+   (um/with-time-db! database ["sync" "analyze" "classify-table"]
+     (classify/classify-table! table))
+
+   (update-fields-last-analyzed! table)))
 
 (s/defn analyze-db!
   "Perform in-depth analysis on the data for all Tables in a given DATABASE.
@@ -82,8 +92,9 @@
    counting. This also updates the `:last_analyzed` value for each affected Field."
   [database :- i/DatabaseInstance]
   (sync-util/sync-operation :analyze database (format "Analyze data for %s" (sync-util/name-for-logging database))
-    (let [tables (sync-util/db->sync-tables database)]
-      (sync-util/with-emoji-progress-bar [emoji-progress-bar (count tables)]
-        (doseq [table tables]
-          (analyze-table! table)
-          (log/info (u/format-color 'blue "%s Analyzed %s" (emoji-progress-bar) (sync-util/name-for-logging table))))))))
+    (um/with-time-db! database ["sync" "analyze" "db"]
+      (let [tables (sync-util/db->sync-tables database)]
+        (sync-util/with-emoji-progress-bar [emoji-progress-bar (count tables)]
+          (doseq [table tables]
+            (analyze-table! database table)
+            (log/info (u/format-color 'blue "%s Analyzed %s" (emoji-progress-bar) (sync-util/name-for-logging table)))))))))

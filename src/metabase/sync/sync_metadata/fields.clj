@@ -16,7 +16,9 @@
              [interface :as i]
              [util :as sync-util]]
             [metabase.util :as u]
-            [metabase.util.schema :as su]
+            [metabase.util
+             [schema :as su]
+             [metrics :as um]]
             [schema.core :as s]
             [toucan.db :as db]))
 
@@ -142,6 +144,7 @@
   "Mark an OLD-FIELD belonging to TABLE as inactive if corresponding Field object exists."
   [table :- i/TableInstance, old-field :- TableMetadataFieldWithID]
   (log/info (format "Marking %s as inactive." (field-metadata-name-for-logging table old-field)))
+
   (db/update! Field (:id old-field)
     :active false)
   ;; Now recursively mark and nested fields as inactive
@@ -228,6 +231,7 @@
                         ;; should not overwrite a special_type that is already present (could have been specified by
                         ;; the user).
                         (and (not (:special_type field)) new-special-type)))]
+
       ;; update special type if one came back from DB metadata but Field doesn't currently have one
       (db/update! Field (u/get-id field)
                   (merge {:base_type (:base-type db-field)}
@@ -305,14 +309,18 @@
   ([database :- i/DatabaseInstance, table :- i/TableInstance]
    (sync-util/with-error-handling (format "Error syncing fields for %s" (sync-util/name-for-logging table))
      (let [db-metadata (db-metadata database table)]
+
        ;; make sure the instances of Field are in-sync
-       (sync-field-instances! table db-metadata (our-metadata table) nil)
+       (um/with-time-db! database ["sync" "metadata" "fields" "sync-field-instances"]
+         (sync-field-instances! table db-metadata (our-metadata table) nil))
        ;; now that tables are synced and fields created as needed make sure field properties are in sync
-       (update-metadata! table db-metadata nil)))))
+       (um/with-time-db! database ["sync" "metadata" "fields" "update-metadata"]
+         (update-metadata! table db-metadata nil))))))
 
 
 (s/defn sync-fields!
   "Sync the Fields in the Metabase application database for all the Tables in a DATABASE."
   [database :- i/DatabaseInstance]
-  (doseq [table (sync-util/db->sync-tables database)]
-    (sync-fields-for-table! database table)))
+  (let [tables (sync-util/db->sync-tables database)]
+    (doseq [table tables]
+      (sync-fields-for-table! database table))))
