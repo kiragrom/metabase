@@ -152,7 +152,6 @@ export default class Navbar extends Component {
               to="/"
               data-metabase-event={"Navbar;Logo"}
               className="LogoNavItem NavItem cursor-pointer flex align-center transition-background justify-center"
-              activeClassName="NavItem--selected"
             >
               <img src="app/assets/img/adlibertas/logo.png" alt="" height="48" width="52"/>
             </Link>
