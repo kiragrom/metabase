@@ -101,7 +101,7 @@ export default class ProfileLink extends Component {
                         "Navbar;Profile Dropdown;Edit Profile"
                       }
                       onClick={this.closeDropdown}
-                      className="Dropdown-item block text-white no-decoration"
+                      className="Dropdown-item block no-decoration"
                     >
                       {t`Account Settings`}
                     </Link>
@@ -116,7 +116,7 @@ export default class ProfileLink extends Component {
                         "Navbar;Profile Dropdown;Enter Admin"
                       }
                       onClick={this.closeDropdown}
-                      className="Dropdown-item block text-white no-decoration"
+                      className="Dropdown-item block no-decoration"
                     >
                       {t`Admin Panel`}
                     </Link>
@@ -129,7 +129,7 @@ export default class ProfileLink extends Component {
                       to="/"
                       data-metabase-event={"Navbar;Profile Dropdown;Exit Admin"}
                       onClick={this.closeDropdown}
-                      className="Dropdown-item block text-white no-decoration"
+                      className="Dropdown-item block no-decoration"
                     >
                       {t`Exit Admin`}
                     </Link>
@@ -139,7 +139,7 @@ export default class ProfileLink extends Component {
                 <li>
                   <a
                     data-metabase-event={"Navbar;Profile Dropdown;Help " + tag}
-                    className="Dropdown-item block text-white no-decoration"
+                    className="Dropdown-item block no-decoration"
                     href={"http://www.metabase.com/docs/" + tag}
                     target="_blank"
                   >
@@ -154,7 +154,7 @@ export default class ProfileLink extends Component {
                         "Navbar;Profile Dropdown;Debugging " + tag
                       }
                       onClick={this.openModal.bind(this, "logs")}
-                      className="Dropdown-item block text-white no-decoration"
+                      className="Dropdown-item block no-decoration"
                     >
                       {t`Logs`}
                     </a>
@@ -165,7 +165,7 @@ export default class ProfileLink extends Component {
                   <a
                     data-metabase-event={"Navbar;Profile Dropdown;About " + tag}
                     onClick={this.openModal.bind(this, "about")}
-                    className="Dropdown-item block text-white no-decoration"
+                    className="Dropdown-item block no-decoration"
                   >
                     {t`About Metabase`}
                   </a>
@@ -175,7 +175,7 @@ export default class ProfileLink extends Component {
                   <Link
                     to="/auth/logout"
                     data-metabase-event={"Navbar;Profile Dropdown;Logout"}
-                    className="Dropdown-item block text-white no-decoration"
+                    className="Dropdown-item block no-decoration"
                   >
                     {t`Sign out`}
                   </Link>
