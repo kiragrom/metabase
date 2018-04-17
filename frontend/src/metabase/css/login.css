@@ -21,9 +21,18 @@
 .brand-boat-container {
   position: absolute;
   bottom: 0;
+  width: 100%;
+  margin: auto;
   z-index: 6;
-  -webkit-animation: boat_trip 200s linear infinite;
-  margin-bottom: 0.5em;
+  margin-bottom: 1em;
+}
+
+.brand-boat-container > div {
+  display: inline-block;
+}
+
+.brand-boat-container a {
+  text-decoration: none !important;
 }
 
 .brand-boat {

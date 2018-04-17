@@ -61,7 +61,7 @@ const MainNavLink = ({ to, name, eventName, icon }) => (
     data-metabase-event={`NavBar;${eventName}`}
     style={BUTTON_PADDING_STYLES.navButton}
     className={
-      "NavItem cursor-pointer flex-full text-white text-bold no-decoration flex align-center px2 transition-background"
+      "NavItem cursor-pointer flex-full text-bold no-decoration flex align-center px2 transition-background"
     }
     activeClassName="NavItem--selected"
   >
@@ -151,10 +151,10 @@ export default class Navbar extends Component {
             <Link
               to="/"
               data-metabase-event={"Navbar;Logo"}
-              className="LogoNavItem NavItem cursor-pointer text-white flex align-center transition-background justify-center"
+              className="LogoNavItem NavItem cursor-pointer flex align-center transition-background justify-center"
               activeClassName="NavItem--selected"
             >
-              <LogoIcon dark={true} />
+              <img src="app/assets/img/adlibertas/logo.png" alt="" height="48" width="52"/>
             </Link>
           </li>
           <li className="md-pl3 hide xs-show">
@@ -200,7 +200,7 @@ export default class Navbar extends Component {
             </Link>
           </li>
           <li className="flex-align-right transition-background hide sm-show">
-            <div className="inline-block text-white">
+            <div className="inline-block">
               <ProfileLink {...this.props} />
             </div>
           </li>
