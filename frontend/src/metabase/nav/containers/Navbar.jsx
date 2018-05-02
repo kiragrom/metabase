@@ -70,6 +70,22 @@ const MainNavLink = ({ to, name, eventName, icon }) => (
   </Link>
 );
 
+const MainNavAnchor = ({ href, name, eventName, icon }) => (
+  <a
+    href={href}
+    target="_blank"
+    data-metabase-event={`NavBar;${eventName}`}
+    style={BUTTON_PADDING_STYLES.navButton}
+    className={
+      "NavItem cursor-pointer flex-full text-bold no-decoration flex align-center px2 transition-background"
+    }
+    activeClassName="NavItem--selected"
+  >
+    <Icon name={icon} className="md-hide" />
+    <span className="hide md-show">{name}</span>
+  </a>
+);
+
 @connect(mapStateToProps, mapDispatchToProps)
 export default class Navbar extends Component {
   static propTypes = {
@@ -151,12 +167,20 @@ export default class Navbar extends Component {
             <Link
               to="/"
               data-metabase-event={"Navbar;Logo"}
-              className="LogoNavItem NavItem cursor-pointer flex align-center transition-background justify-center"
+              className="LogoNavItem cursor-pointer flex align-center transition-background justify-center"
             >
               <img src="app/assets/img/adlibertas/logo.png" alt="" height="48" width="52"/>
             </Link>
           </li>
           <li className="md-pl3 hide xs-show">
+            <MainNavAnchor
+              href="https://dashboard.adlibertas.com"
+              name={t`AdLibertas Portal`}
+              eventName="AdLibertas Portal"
+              icon="info"
+            />
+          </li>
+          <li className="md-pl1 hide xs-show">
             <MainNavLink
               to="/dashboards"
               name={t`Dashboards`}
