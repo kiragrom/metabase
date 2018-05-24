@@ -100,8 +100,8 @@
   (->honeysql driver (keyword (hx/escape-dots (name field-name)))))
 
 (defmethod ->honeysql [Object DateTimeField]
-  [driver {unit :unit, field :field}]
-  (sql/date driver unit (->honeysql driver field)))
+  [driver {field :field}]
+  (->honeysql driver field))
 
 (defmethod ->honeysql [Object TimeField]
   [driver {field :field}]
